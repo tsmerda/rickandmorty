@@ -6,16 +6,22 @@
 //
 
 import Foundation
+import Factory
 
 @Observable
 @MainActor
 final class CharacterListViewModel: ViewModelType {
     // MARK: - Dependencies
 
+    @ObservationIgnored
+    @LazyInjected(\.characterRepository) private var characterRepository
+
     // MARK: - View Bindings
     
     public enum Action: Sendable {
         case loading(LoadingAction)
+        case characterTap
+        case loadMoreIfNeeded(Character)
     }
 
     // MARK: - Coordinator Bindings
@@ -24,13 +30,17 @@ final class CharacterListViewModel: ViewModelType {
 
     // MARK: - Variables
 
-    private let apiManager: APIManaging
+    var repositoryState: CharacterLoadingState {
+        .loading
+    }
+
+    var characters: [Character] {
+        characterRepository.characters
+    }
 
     // MARK: - Initialization
 
-    init(apiManager: APIManaging) {
-        self.apiManager = apiManager
-    }
+    init() {}
 
     // MARK: - Actions
 
@@ -42,6 +52,10 @@ final class CharacterListViewModel: ViewModelType {
             switch action {
             case let .loading(action):
                 try await send(action: action)
+            case let .loadMoreIfNeeded(character):
+                await characterRepository.loadMoreIfNeeded(for: character)
+            case .characterTap:
+                throw NSError()
             }
         } catch {
             Logger.log("Encountered error in action \(action): \(error)", .error)
@@ -51,11 +65,9 @@ final class CharacterListViewModel: ViewModelType {
     func send(action: LoadingAction) async throws {
         switch action {
         case .task:
-            // load content
-            throw NSError()
+            await characterRepository.load()
         case .pullToRefresh:
-            // refresh content
-            throw NSError()
+            await characterRepository.load()
         }
     }
 }

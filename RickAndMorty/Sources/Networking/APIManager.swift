@@ -6,8 +6,13 @@
 //
 
 import Foundation
+import Factory
 
-final class APIManager: APIManaging {
+protocol APIManagerType {
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
+}
+
+final class APIManager: APIManagerType {
     private lazy var urlSession: URLSession = {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
@@ -64,5 +69,12 @@ final class APIManager: APIManaging {
         let object = try decoder.decode(T.self, from: data)
         
         return object
+    }
+}
+
+extension Container {
+    var apiManager: Factory<APIManagerType> {
+        self { APIManager() }
+            .singleton
     }
 }

@@ -20,14 +20,14 @@ struct Character: Decodable {
     let episodeUrls: [URL]
     let url: URL
     let created: Date
-    
+
     var episodeIds: [Int] {
         episodeUrls
             .compactMap {
                 Int($0.lastPathComponent)
             }
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -68,8 +68,8 @@ extension Character {
         url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
         created: Date()
     )
-    
-    static let characters: [Character] = {
+
+    static let mockArray: [Character] = {
         (0 ... 20).map {
             Character(
                 id: $0,

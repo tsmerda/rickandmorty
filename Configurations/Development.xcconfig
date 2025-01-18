@@ -1,0 +1,8 @@
+//
+//  Development.xcconfig
+//  RickAndMorty
+//
+//  Created by Tomáš Šmerda on 18.01.2025.
+//
+
+API_BASE_URL = https:/$()/rickandmortyapi.com/api/

@@ -6,13 +6,21 @@
 //
 
 import SwiftUI
+import Factory
 
 struct CharacterListView: View {
     @StateObject var viewModel: CharacterListViewModel
 
     var body: some View {
-        ScrollView {
-            Text("Hello, World!")
+        ZStack {
+//            switch viewModel.repositoryState {
+//            case .finished:
+                contentView
+//            case .initial, .loading:
+//                EmptyView()
+//            case .failed:
+//                EmptyView()
+//            }
         }
         .task {
             await viewModel.send(action: .loading(.task))
@@ -21,9 +29,28 @@ struct CharacterListView: View {
 }
 
 private extension CharacterListView {
-
+    var contentView: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: ._2) {
+                ForEach(viewModel.characters) { character in
+                    CharacterCardView(
+                        character: character,
+                        isFavorite: false,
+                        onCardTap: {
+                            await viewModel.send(action: .characterTap)
+                        }
+                    )
+                    .task {
+                        await viewModel.send(action: .loadMoreIfNeeded(character))
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, ._2)
+    }
 }
 
 #Preview {
-    CharacterListView(viewModel: .init(apiManager: APIManager()))
+    let _ = Container.shared.characterRepository.register { CharacterRepositoryMock() }
+    CharacterListView(viewModel: .init())
 }

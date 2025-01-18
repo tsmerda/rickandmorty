@@ -9,7 +9,7 @@ import Foundation
 
 struct Configuration: Decodable {
     private enum CodingKeys: String, CodingKey {
-        case apiBaseUrl = "https://rickandmortyapi.com/api/"
+        case apiBaseUrl = "API_BASE_URL"
     }
 
     let apiBaseUrl: URL

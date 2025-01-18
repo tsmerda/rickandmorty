@@ -51,6 +51,11 @@
 			path = RickAndMortyUITests;
 			sourceTree = "<group>";
 		};
+		B5A10BD62D3BF0C900D230B9 /* Configurations */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Configurations;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +89,7 @@
 		B5601D212D3A969C000F95BE = {
 			isa = PBXGroup;
 			children = (
+				B5A10BD62D3BF0C900D230B9 /* Configurations */,
 				B5601D2C2D3A969C000F95BE /* RickAndMorty */,
 				B5601D3E2D3A969E000F95BE /* RickAndMortyTests */,
 				B5601D482D3A969E000F95BE /* RickAndMortyUITests */,
@@ -119,6 +125,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				B5601D2C2D3A969C000F95BE /* RickAndMorty */,
+				B5A10BD62D3BF0C900D230B9 /* Configurations */,
 			);
 			name = RickAndMorty;
 			packageProductDependencies = (
@@ -182,7 +189,7 @@
 		B5601D222D3A969C000F95BE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
+				BuildIndependentTargetsInParallel = NO;
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
