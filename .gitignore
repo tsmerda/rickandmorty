@@ -228,3 +228,8 @@ Makefile
 ### Tuist ###
 Derived/**
 Tuist/master.key
+Core/Sources/Resources/Generated/**
+Apps/*/*.xcworkspace
+*.package.resolved
+/L10N/Sources/L10N/Resources/Generated
+*.xcodeproj
