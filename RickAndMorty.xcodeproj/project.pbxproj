@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B585FE722D3BA27200433E1B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B585FE712D3BA27200433E1B /* Kingfisher */; };
 		B585FE752D3BA28000433E1B /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = B585FE742D3BA28000433E1B /* Factory */; };
+		B5A10BD22D3BD93300D230B9 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = B5A10BD12D3BD93300D230B9 /* ProgressHUD */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A10BD22D3BD93300D230B9 /* ProgressHUD in Frameworks */,
 				B585FE722D3BA27200433E1B /* Kingfisher in Frameworks */,
 				B585FE752D3BA28000433E1B /* Factory in Frameworks */,
 			);
@@ -122,6 +124,7 @@
 			packageProductDependencies = (
 				B585FE712D3BA27200433E1B /* Kingfisher */,
 				B585FE742D3BA28000433E1B /* Factory */,
+				B5A10BD12D3BD93300D230B9 /* ProgressHUD */,
 			);
 			productName = RickAndMorty;
 			productReference = B5601D2A2D3A969C000F95BE /* RickAndMorty.app */;
@@ -208,6 +211,7 @@
 			packageReferences = (
 				B585FE702D3BA27200433E1B /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				B585FE732D3BA28000433E1B /* XCRemoteSwiftPackageReference "Factory" */,
+				B5A10BD02D3BD93300D230B9 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B5601D2B2D3A969C000F95BE /* Products */;
@@ -644,6 +648,14 @@
 				minimumVersion = 2.4.3;
 			};
 		};
+		B5A10BD02D3BD93300D230B9 /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 14.1.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -656,6 +668,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B585FE732D3BA28000433E1B /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
+		};
+		B5A10BD12D3BD93300D230B9 /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5A10BD02D3BD93300D230B9 /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
