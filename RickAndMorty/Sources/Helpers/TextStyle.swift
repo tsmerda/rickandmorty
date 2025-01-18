@@ -12,7 +12,6 @@ struct TextStyle {
     let lineHeight: CGFloat
     let letterSpacing: CGFloat
     let fontWeight: Font.Weight
-    let color: Color
     let relativeTextStyle: Font.TextStyle
 }
 
@@ -22,7 +21,6 @@ extension TextStyle {
         lineHeight: 34,
         letterSpacing: 0,
         fontWeight: .bold,
-        color: .black,
         relativeTextStyle: .headline
     )
 
@@ -31,7 +29,6 @@ extension TextStyle {
         lineHeight: 24,
         letterSpacing: 0,
         fontWeight: .bold,
-        color: .black,
         relativeTextStyle: .headline
     )
 
@@ -40,7 +37,6 @@ extension TextStyle {
         lineHeight: 20,
         letterSpacing: 0,
         fontWeight: .bold,
-        color: .black,
         relativeTextStyle: .headline
     )
 
@@ -49,7 +45,6 @@ extension TextStyle {
         lineHeight: 22,
         letterSpacing: 0,
         fontWeight: .regular,
-        color: .black,
         relativeTextStyle: .body
     )
 
@@ -58,7 +53,6 @@ extension TextStyle {
         lineHeight: 20,
         letterSpacing: 0,
         fontWeight: .regular,
-        color: .black,
         relativeTextStyle: .body
     )
 
@@ -67,7 +61,6 @@ extension TextStyle {
         lineHeight: 18,
         letterSpacing: 0,
         fontWeight: .regular,
-        color: .black,
         relativeTextStyle: .body
     )
 
@@ -76,16 +69,14 @@ extension TextStyle {
         lineHeight: 14,
         letterSpacing: 0,
         fontWeight: .regular,
-        color: .black,
         relativeTextStyle: .caption
     )
 }
 
 extension View {
-    func textStyle(_ textStyle: TextStyle, isUppercased: Bool = true) -> some View {
+    func textStyle(_ textStyle: TextStyle, isUppercased: Bool = false) -> some View {
         self
             .font(.system(size: textStyle.size, weight: textStyle.fontWeight))
-            .foregroundColor(textStyle.color)
             .lineSpacing(textStyle.lineHeight - textStyle.size)
             .padding(.vertical, (textStyle.lineHeight - textStyle.size) / 2)
             .kerning(textStyle.letterSpacing)
