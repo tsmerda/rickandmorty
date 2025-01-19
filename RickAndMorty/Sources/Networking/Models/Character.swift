@@ -19,7 +19,7 @@ struct Character: Decodable {
     let imageUrl: URL
     let episodeUrls: [URL]
     let url: URL
-    let created: String // Date()
+    let created: String // Date
 
     var episodeIds: [Int] {
         episodeUrls

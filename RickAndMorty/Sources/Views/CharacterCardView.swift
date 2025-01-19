@@ -2,7 +2,7 @@
 //  CharacterCardView.swift
 //  RickAndMorty
 //
-//  Created by Tomáš Šmerda on 17.01.2025.
+//  Created by Tomáš Šmerda on 19.01.2025.
 //
 
 import SwiftUI
@@ -11,28 +11,69 @@ import Kingfisher
 struct CharacterCardView: View {
     let character: Character
     let isFavorite: Bool
-    var onCardTap: () async -> Void
+    var onFavoriteTap: () async -> Void
 
-    @ScaledMetric private var imageSize: CGFloat = 44
+    @ScaledMetric private var imageSize: CGFloat = 140
+
+    private var favoriteIcon: ImageAsset.Image { // TODO: - fix make it ImageAsset
+        isFavorite ? .Icons.favoritesSelected : .Icons.favoritesEnabled // TODO: - fix icon size
+    }
+
+    private var favoriteColor: Color {
+        isFavorite ? .accent : AssetProvider.Colors.Icons.iconsSecondary.swiftUIColor
+    }
 
     var body: some View {
-        Button {
-            Task {
-                await onCardTap()
-            }
-        } label: {
-            HStack(spacing: ._2) {
+        VStack(alignment: .leading, spacing: .zero) {
+            HStack(alignment: .top, spacing: ._2) {
                 avatarView
-                infoView
-                Spacer()
-                Image(.Icons.arrowRight)
-                    .foregroundStyle(AssetProvider.Colors.Icons.iconsSecondary.swiftUIColor)
+                VStack(alignment: .leading, spacing: ._05 + ._025) {
+                    HStack(alignment: .top) {
+                        Text("Name")
+                            .textStyle(.paragraphMedium)
+                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
+                        Spacer()
+                        Button {
+                            Task {
+                                await onFavoriteTap()
+                            }
+                        } label: {
+                            Image(uiImage: favoriteIcon) // TODO: - fix
+                                .foregroundStyle(favoriteColor)
+                        }
+                    }
+                    Text(character.name)
+                        .textStyle(.headline2)
+                        .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
+                        .multilineTextAlignment(.leading)
+                }
             }
+            .padding(._2)
+
+            Divider()
+                .background(AssetProvider.Colors.Foregrounds.foregroundsSeparator.swiftUIColor)
+
+            Grid(
+                alignment: .leading,
+                horizontalSpacing: Spacing._5.value,
+                verticalSpacing: Spacing._3.value
+            ) {
+                ForEach(CharacterInfo.all(for: character), id: \.self) { info in
+                    GridRow {
+                        Text(info.label)
+                            .textStyle(.paragraphSmall)
+                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
+                        Text(info.value)
+                            .textStyle(.headline3)
+                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
+                    }
+                }
+            }
+            .padding(._3)
         }
-        .padding(._1)
         .background(AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor)
         .cornerRadius(.medium)
-        .shadow(color: .black.opacity(0.04), radius: 16, x: 0, y: 0)
+        .shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 0)
     }
 }
 
@@ -49,29 +90,12 @@ private extension CharacterCardView {
     var avatarPlaceholder: some View {
         AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor
     }
-
-    var infoView: some View {
-        VStack(alignment: .leading, spacing: ._025) {
-            HStack(spacing: ._05) {
-                Text(character.name)
-                    .textStyle(.headline3)
-                    .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
-                if isFavorite {
-                    Image(.Icons.favoritesActive)
-                        .foregroundStyle(.accent)
-                }
-            }
-            Text(character.status)
-                .textStyle(.paragraphSmall)
-                .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
-        }
-    }
 }
 
 #Preview {
     CharacterCardView(
         character: Character.mock,
         isFavorite: true,
-        onCardTap: {} // TODO: - large name vertically align
+        onFavoriteTap: {} // TODO: - large name vertically align
     )
 }

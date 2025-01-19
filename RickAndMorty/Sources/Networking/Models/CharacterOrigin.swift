@@ -46,7 +46,6 @@ extension CharacterOrigin: Equatable {}
 extension CharacterOrigin {
     static let mock: CharacterOrigin = .init(
         name: "Earth",
-        // swiftlint:disable:next force_unwrapping
         url: URL(string: "https://rickandmortyapi.com/api/location/1")!
     )
 }

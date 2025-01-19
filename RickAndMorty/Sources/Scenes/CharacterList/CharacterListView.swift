@@ -41,7 +41,7 @@ private extension CharacterListView {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: ._2) {
                 ForEach(viewModel.filteredProducts) { character in
-                    CharacterCardView(
+                    CharacterRowView(
                         character: character,
                         isFavorite: false,
                         onCardTap: {
