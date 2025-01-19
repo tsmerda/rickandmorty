@@ -12,18 +12,26 @@ struct CharacterListView: View {
     @StateObject var viewModel: CharacterListViewModel
 
     var body: some View {
-        ZStack {
-//            switch viewModel.repositoryState {
-//            case .finished:
-                contentView
-//            case .initial, .loading:
-//                EmptyView()
-//            case .failed:
-//                EmptyView()
-//            }
+        NavigationStack {
+            ZStack {
+                switch viewModel.state {
+                case .finished:
+                    contentView
+                case .initial, .loading:
+                    EmptyView()
+                case .failed:
+                    EmptyView()
+                }
+            }
+            .navigationTitle("Characters")
+            .background(AssetProvider.Colors.Backgrounds.backgroundsPrimary.swiftUIColor)
         }
+        .searchable(text: $viewModel.searchCharacter, prompt: "Search character")
         .task {
             await viewModel.send(action: .loading(.task))
+        }
+        .refreshable {
+            await viewModel.send(action: .loading(.pullToRefresh))
         }
     }
 }
@@ -32,7 +40,7 @@ private extension CharacterListView {
     var contentView: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: ._2) {
-                ForEach(viewModel.characters) { character in
+                ForEach(viewModel.filteredProducts) { character in
                     CharacterCardView(
                         character: character,
                         isFavorite: false,
@@ -45,8 +53,9 @@ private extension CharacterListView {
                     }
                 }
             }
+            .padding(.top, ._1)
+            .padding(.horizontal, ._2)
         }
-        .padding(.horizontal, ._2)
     }
 }
 

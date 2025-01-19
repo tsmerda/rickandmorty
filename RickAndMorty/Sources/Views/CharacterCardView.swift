@@ -28,10 +28,11 @@ struct CharacterCardView: View {
                 Image(.Icons.arrowRight)
                     .foregroundStyle(AssetProvider.Colors.Icons.iconsSecondary.swiftUIColor)
             }
-            .padding(._1)
-            .background(AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor)
-            .shadow(color: .black.opacity(0.04), radius: 16, x: 0, y: 0)
         }
+        .padding(._1)
+        .background(AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor)
+        .cornerRadius(.medium)
+        .shadow(color: .black.opacity(0.04), radius: 16, x: 0, y: 0)
     }
 }
 

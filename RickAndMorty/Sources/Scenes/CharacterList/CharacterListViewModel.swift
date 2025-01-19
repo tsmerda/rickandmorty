@@ -7,40 +7,57 @@
 
 import Foundation
 import Factory
+import Combine
+import ProgressHUD
 
-@Observable
 @MainActor
 final class CharacterListViewModel: ViewModelType {
     // MARK: - Dependencies
 
-    @ObservationIgnored
     @LazyInjected(\.characterRepository) private var characterRepository
 
     // MARK: - View Bindings
-    
+
     public enum Action: Sendable {
         case loading(LoadingAction)
         case characterTap
         case loadMoreIfNeeded(Character)
     }
 
-    // MARK: - Coordinator Bindings
-
-    // MARK: - Dependencies
-
     // MARK: - Variables
 
-    var repositoryState: CharacterLoadingState {
-        .loading
+    @Published var characters: [Character] = []
+    @Published var state: CharacterLoadingState = .loading
+    @Published var searchCharacter: String = ""
+
+    var filteredProducts: [Character] {
+        guard !searchCharacter.isEmpty else { return characters }
+        return characters.filter { product in
+            product.name.lowercased().contains(searchCharacter.lowercased())
+        }
     }
 
-    var characters: [Character] {
-        characterRepository.characters
-    }
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
 
-    init() {}
+    init() {
+        setupObservations()
+    }
+
+    private func setupObservations() {
+        characterRepository.statePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newState in
+                self?.state = newState
+                self?.updateProgressHUD(for: newState)
+            }
+            .store(in: &cancellables)
+
+        characterRepository.charactersPublisher
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$characters)
+    }
 
     // MARK: - Actions
 
@@ -68,6 +85,19 @@ final class CharacterListViewModel: ViewModelType {
             await characterRepository.load()
         case .pullToRefresh:
             await characterRepository.load()
+        }
+    }
+
+    private func updateProgressHUD(for state: CharacterLoadingState) {
+        switch state {
+        case .loading:
+            ProgressHUD.animate()
+        case .failed:
+            ProgressHUD.failed()
+        case .initial, .finished:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                ProgressHUD.dismiss()
+            }
         }
     }
 }

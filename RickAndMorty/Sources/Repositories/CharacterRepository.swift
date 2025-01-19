@@ -7,12 +7,13 @@
 
 import Factory
 import Foundation
+import Combine
 
 typealias CharacterLoadingState = CharacterRepository.State
 
 protocol CharacterRepositoryType: ObservableObject {
-    var state: CharacterLoadingState { get }
-    var characters: [Character] { get }
+    var statePublisher: AnyPublisher<CharacterLoadingState, Never> { get }
+    var charactersPublisher: AnyPublisher<[Character], Never> { get }
 
     func load() async
     func loadMoreIfNeeded(for character: Character) async
@@ -28,8 +29,16 @@ final class CharacterRepository: CharacterRepositoryType {
 
     @LazyInjected(\.apiManager) private var apiManager
 
-    @Published var state: State = .initial
-    @Published var characters: [Character] = .init()
+    @Published private var state: CharacterLoadingState = .initial
+    @Published private var characters: [Character] = []
+
+    var statePublisher: AnyPublisher<State, Never> {
+        $state.eraseToAnyPublisher()
+    }
+
+    var charactersPublisher: AnyPublisher<[Character], Never> {
+        $characters.eraseToAnyPublisher()
+    }
 
     private var currentResponseInfo: PaginationInfo?
 
@@ -47,13 +56,11 @@ extension CharacterRepository {
         guard character == characters.last else {
             return
         }
-
         guard let nextPageNumber = currentResponseInfo?.nextPageNumber else {
             return
         }
 
         state = .finished(loadingMore: true)
-
         await fetch(page: nextPageNumber)
     }
 }
@@ -64,14 +71,11 @@ private extension CharacterRepository {
 
         do {
             let response: PaginatedResponse<Character> = try await apiManager.request(endpoint)
-
             currentResponseInfo = response.info
             characters += response.results
-
             state = .finished(loadingMore: false)
         } catch {
             Logger.log("\(error)", .error)
-
             state = .failed
         }
     }
@@ -86,8 +90,11 @@ extension Container {
 }
 
 public final class CharacterRepositoryMock: CharacterRepositoryType {
-    @Published var state: CharacterLoadingState = .initial
-    @Published var characters: [Character] = Character.mockArray
+    @Published private var state: CharacterLoadingState = .finished(loadingMore: false)
+    @Published private var characters: [Character] = Character.mockArray
+
+    var statePublisher: AnyPublisher<CharacterLoadingState, Never> = .init(Just(.finished(loadingMore: false)))
+    var charactersPublisher: AnyPublisher<[Character], Never> = .init(Just(Character.mockArray))
 
     func load() async {}
 

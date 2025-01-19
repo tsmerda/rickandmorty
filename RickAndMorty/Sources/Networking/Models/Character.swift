@@ -19,7 +19,7 @@ struct Character: Decodable {
     let imageUrl: URL
     let episodeUrls: [URL]
     let url: URL
-    let created: Date
+    let created: String // Date()
 
     var episodeIds: [Int] {
         episodeUrls
@@ -66,7 +66,7 @@ extension Character {
             URL(string: "https://rickandmortyapi.com/api/episode/2")!
         ],
         url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
-        created: Date()
+        created: Date().formatted()
     )
 
     static let mockArray: [Character] = {
@@ -86,7 +86,7 @@ extension Character {
                     URL(string: "https://rickandmortyapi.com/api/episode/2")!
                 ],
                 url: URL(string: "https://rickandmortyapi.com/api/character/2")!,
-                created: Date().addingTimeInterval(Double($0))
+                created: Date().addingTimeInterval(Double($0) + 1).formatted()
             )
         }
     }()
