@@ -14,9 +14,12 @@ typealias CharacterLoadingState = CharacterRepository.State
 protocol CharacterRepositoryType: ObservableObject {
     var statePublisher: AnyPublisher<CharacterLoadingState, Never> { get }
     var charactersPublisher: AnyPublisher<[Character], Never> { get }
+    var favoriteCharactersPublisher: AnyPublisher<[Character.ID], Never> { get }
 
     func load() async
     func loadMoreIfNeeded(for character: Character) async
+    func addFavorite(characterID: Character.ID)
+    func removeFavorite(characterID: Character.ID)
 }
 
 final class CharacterRepository: CharacterRepositoryType {
@@ -31,6 +34,9 @@ final class CharacterRepository: CharacterRepositoryType {
 
     @Published private var state: CharacterLoadingState = .initial
     @Published private var characters: [Character] = []
+    @Published private var favoriteCharacters: [Character.ID] = []
+
+    private let favoritesKey = "FavoriteCharacters" // TODO: - add to constants
 
     var statePublisher: AnyPublisher<State, Never> {
         $state.eraseToAnyPublisher()
@@ -40,9 +46,15 @@ final class CharacterRepository: CharacterRepositoryType {
         $characters.eraseToAnyPublisher()
     }
 
+    var favoriteCharactersPublisher: AnyPublisher<[Character.ID], Never> {
+        $favoriteCharacters.eraseToAnyPublisher()
+    }
+
     private var currentResponseInfo: PaginationInfo?
 
-    init() {}
+    init() {
+        loadFavoriteCharacters()
+    }
 }
 
 extension CharacterRepository {
@@ -62,6 +74,32 @@ extension CharacterRepository {
 
         state = .finished(loadingMore: true)
         await fetch(page: nextPageNumber)
+    }
+
+    func addFavorite(characterID: Character.ID) {
+        guard !favoriteCharacters.contains(characterID) else { return }
+        favoriteCharacters.append(characterID)
+        saveFavoriteCharacters()
+    }
+
+    func removeFavorite(characterID: Character.ID) {
+        favoriteCharacters.removeAll { $0 == characterID }
+        saveFavoriteCharacters()
+    }
+
+    func saveFavoriteCharacters() {
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(favoriteCharacters) {
+            UserDefaults.standard.set(data, forKey: favoritesKey)
+        }
+    }
+
+    func loadFavoriteCharacters() {
+        let decoder = JSONDecoder()
+        if let data = UserDefaults.standard.data(forKey: favoritesKey),
+           let favorites = try? decoder.decode([Character.ID].self, from: data) {
+            favoriteCharacters = favorites
+        }
     }
 }
 
@@ -92,11 +130,29 @@ extension Container {
 public final class CharacterRepositoryMock: CharacterRepositoryType {
     @Published private var state: CharacterLoadingState = .finished(loadingMore: false)
     @Published private var characters: [Character] = Character.mockArray
+    @Published private var favoriteCharacters: [Character.ID] = []
 
-    var statePublisher: AnyPublisher<CharacterLoadingState, Never> = .init(Just(.finished(loadingMore: false)))
-    var charactersPublisher: AnyPublisher<[Character], Never> = .init(Just(Character.mockArray))
+    var statePublisher: AnyPublisher<CharacterLoadingState, Never> {
+        $state.eraseToAnyPublisher()
+    }
+
+    var charactersPublisher: AnyPublisher<[Character], Never> {
+        $characters.eraseToAnyPublisher()
+    }
+
+    var favoriteCharactersPublisher: AnyPublisher<[Character.ID], Never> {
+        $favoriteCharacters.eraseToAnyPublisher()
+    }
 
     func load() async {}
 
     func loadMoreIfNeeded(for character: Character) async {}
+
+    func addFavorite(characterID: Character.ID) {
+        favoriteCharacters.append(characterID)
+    }
+
+    func removeFavorite(characterID: Character.ID) {
+        favoriteCharacters.removeAll { $0 == characterID }
+    }
 }

@@ -21,12 +21,17 @@ struct CharacterRowView: View {
                 await onCardTap()
             }
         } label: {
-            HStack(spacing: ._2) {
+            HStack(alignment: .top, spacing: ._2) {
                 avatarView
                 infoView
                 Spacer()
                 Image(.Icons.arrowRight)
                     .foregroundStyle(AssetProvider.Colors.Icons.iconsSecondary.swiftUIColor)
+                    .alignmentGuide(
+                        .top, computeValue: { dimension in
+                            -dimension[.firstTextBaseline]/2
+                        }
+                    )
             }
         }
         .padding(._1)
@@ -52,13 +57,15 @@ private extension CharacterRowView {
 
     var infoView: some View {
         VStack(alignment: .leading, spacing: ._025) {
-            HStack(spacing: ._05) {
+            HStack(alignment: .top, spacing: ._05) {
                 Text(character.name)
                     .textStyle(.headline3)
                     .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
+                    .multilineTextAlignment(.leading)
                 if isFavorite {
                     Image(.Icons.favoritesActive)
                         .foregroundStyle(.accent)
+                        .padding(.vertical, ._025)
                 }
             }
             Text(character.status)
@@ -72,6 +79,6 @@ private extension CharacterRowView {
     CharacterRowView(
         character: Character.mock,
         isFavorite: true,
-        onCardTap: {} // TODO: - large name vertically align
+        onCardTap: {}
     )
 }

@@ -20,7 +20,7 @@ final class CharacterListViewModel: ViewModelType {
 
     public enum Action: Sendable {
         case loading(LoadingAction)
-        case characterTap
+        case characterTap(Character)
         case loadMoreIfNeeded(Character)
     }
 
@@ -29,6 +29,9 @@ final class CharacterListViewModel: ViewModelType {
     @Published var characters: [Character] = []
     @Published var state: CharacterLoadingState = .loading
     @Published var searchCharacter: String = ""
+    @Published private(set) var favoriteCharacterIDs: Set<Character.ID> = []
+
+    private let navigator: NavigationCoordinator
 
     var filteredProducts: [Character] {
         guard !searchCharacter.isEmpty else { return characters }
@@ -41,7 +44,8 @@ final class CharacterListViewModel: ViewModelType {
 
     // MARK: - Initialization
 
-    init() {
+    init(navigator: NavigationCoordinator) {
+        self.navigator = navigator
         setupObservations()
     }
 
@@ -57,6 +61,13 @@ final class CharacterListViewModel: ViewModelType {
         characterRepository.charactersPublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$characters)
+
+        characterRepository.favoriteCharactersPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favoriteIDs in
+                self?.favoriteCharacterIDs = Set(favoriteIDs)
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Actions
@@ -71,8 +82,8 @@ final class CharacterListViewModel: ViewModelType {
                 try await send(action: action)
             case let .loadMoreIfNeeded(character):
                 await characterRepository.loadMoreIfNeeded(for: character)
-            case .characterTap:
-                throw NSError()
+            case let .characterTap(character):
+                await onCharacterTap(character)
             }
         } catch {
             Logger.log("Encountered error in action \(action): \(error)", .error)
@@ -82,10 +93,16 @@ final class CharacterListViewModel: ViewModelType {
     func send(action: LoadingAction) async throws {
         switch action {
         case .task:
-            await characterRepository.load()
+            if characters == [] {
+                await characterRepository.load()
+            }
         case .pullToRefresh:
             await characterRepository.load()
         }
+    }
+
+    func isFavorite(characterID: Character.ID) -> Bool {
+        favoriteCharacterIDs.contains(characterID)
     }
 
     private func updateProgressHUD(for state: CharacterLoadingState) {
@@ -99,5 +116,10 @@ final class CharacterListViewModel: ViewModelType {
                 ProgressHUD.dismiss()
             }
         }
+    }
+
+    private func onCharacterTap(_ character: Character) async {
+        let detailViewModel = CharacterDetailViewModel(character: character, navigator: navigator)
+        await navigator.push(RootViewModel.Path.characterDetail(detailViewModel))
     }
 }

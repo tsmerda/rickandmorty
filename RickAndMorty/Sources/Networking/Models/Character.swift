@@ -53,7 +53,7 @@ extension Character: Equatable {}
 extension Character {
     static let mock: Character = .init(
         id: 1,
-        name: "Rick Sanchez",
+        name: "Abadango cluster Princess Abadango cluster Princess",
         status: "Alive",
         species: "Human",
         type: "",

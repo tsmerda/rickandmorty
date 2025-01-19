@@ -27,49 +27,14 @@ struct CharacterCardView: View {
         VStack(alignment: .leading, spacing: .zero) {
             HStack(alignment: .top, spacing: ._2) {
                 avatarView
-                VStack(alignment: .leading, spacing: ._05 + ._025) {
-                    HStack(alignment: .top) {
-                        Text("Name")
-                            .textStyle(.paragraphMedium)
-                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
-                        Spacer()
-                        Button {
-                            Task {
-                                await onFavoriteTap()
-                            }
-                        } label: {
-                            Image(uiImage: favoriteIcon) // TODO: - fix
-                                .foregroundStyle(favoriteColor)
-                        }
-                    }
-                    Text(character.name)
-                        .textStyle(.headline2)
-                        .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
-                        .multilineTextAlignment(.leading)
-                }
+                nameView
             }
             .padding(._2)
 
             Divider()
                 .background(AssetProvider.Colors.Foregrounds.foregroundsSeparator.swiftUIColor)
 
-            Grid(
-                alignment: .leading,
-                horizontalSpacing: Spacing._5.value,
-                verticalSpacing: Spacing._3.value
-            ) {
-                ForEach(CharacterInfo.all(for: character), id: \.self) { info in
-                    GridRow {
-                        Text(info.label)
-                            .textStyle(.paragraphSmall)
-                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
-                        Text(info.value)
-                            .textStyle(.headline3)
-                            .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
-                    }
-                }
-            }
-            .padding(._3)
+            characterInfoListView
         }
         .background(AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor)
         .cornerRadius(.medium)
@@ -87,8 +52,51 @@ private extension CharacterCardView {
             .cornerRadius(.xSmall)
     }
 
+    var nameView: some View {
+        VStack(alignment: .leading, spacing: ._05 + ._025) {
+            HStack(alignment: .top) {
+                Text("Name")
+                    .textStyle(.paragraphMedium)
+                    .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
+                Spacer()
+                Button {
+                    Task {
+                        await onFavoriteTap()
+                    }
+                } label: {
+                    Image(uiImage: favoriteIcon) // TODO: - fix
+                        .foregroundStyle(favoriteColor)
+                }
+            }
+            Text(character.name)
+                .textStyle(.headline2)
+                .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
+                .multilineTextAlignment(.leading)
+        }
+    }
+
     var avatarPlaceholder: some View {
         AssetProvider.Colors.Backgrounds.backgroundsTertiary.swiftUIColor
+    }
+
+    var characterInfoListView: some View {
+        Grid(
+            alignment: .leading,
+            horizontalSpacing: Spacing._5.value,
+            verticalSpacing: Spacing._3.value
+        ) {
+            ForEach(CharacterInfo.all(for: character), id: \.self) { info in
+                GridRow {
+                    Text(info.label)
+                        .textStyle(.paragraphSmall)
+                        .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsSecondary.swiftUIColor)
+                    Text(info.value)
+                        .textStyle(.headline3)
+                        .foregroundStyle(AssetProvider.Colors.Foregrounds.foregroundsPrimary.swiftUIColor)
+                }
+            }
+        }
+        .padding(._3)
     }
 }
 

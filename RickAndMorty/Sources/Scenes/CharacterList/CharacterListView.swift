@@ -12,20 +12,19 @@ struct CharacterListView: View {
     @StateObject var viewModel: CharacterListViewModel
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                switch viewModel.state {
-                case .finished:
-                    contentView
-                case .initial, .loading:
-                    EmptyView()
-                case .failed:
-                    EmptyView()
-                }
+        ZStack {
+            switch viewModel.state {
+            case .finished:
+                contentView
+            case .initial, .loading:
+                EmptyView()
+            case .failed:
+                EmptyView()
             }
-            .navigationTitle("Characters")
-            .background(AssetProvider.Colors.Backgrounds.backgroundsPrimary.swiftUIColor)
+
         }
+        .navigationTitle("Characters")
+        .background(AssetProvider.Colors.Backgrounds.backgroundsPrimary.swiftUIColor)
         .searchable(text: $viewModel.searchCharacter, prompt: "Search character")
         .task {
             await viewModel.send(action: .loading(.task))
@@ -43,9 +42,9 @@ private extension CharacterListView {
                 ForEach(viewModel.filteredProducts) { character in
                     CharacterRowView(
                         character: character,
-                        isFavorite: false,
+                        isFavorite: viewModel.isFavorite(characterID: character.id),
                         onCardTap: {
-                            await viewModel.send(action: .characterTap)
+                            await viewModel.send(action: .characterTap(character))
                         }
                     )
                     .task {
@@ -61,5 +60,5 @@ private extension CharacterListView {
 
 #Preview {
     let _ = Container.shared.characterRepository.register { CharacterRepositoryMock() }
-    CharacterListView(viewModel: .init())
+    CharacterListView(viewModel: .init(navigator: MockNavigationCoordinator()))
 }
